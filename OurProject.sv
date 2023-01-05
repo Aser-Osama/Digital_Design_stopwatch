@@ -764,26 +764,26 @@ and andup2of(w_up_ofdet_en, notdir , add2m);
 max_of mxof(w_up_ofdet_en, q[13:11], q[10:7], q[6:4], q[3:0], maxofr);
 min_of mnof(w_down_ofdet_en, q[13:11], q[10:7], q[6:4], q[3:0], minofr);
 //
-wire [15:0]qdisplay;
-assign qdisplay[0] = q[0];
-assign qdisplay[1] = q[1];
-assign qdisplay[2] = q[2];
-assign qdisplay[3] = q[3];
+// wire [15:0]qdisplay;
+// assign qdisplay[0] = q[0];
+// assign qdisplay[1] = q[1];
+// assign qdisplay[2] = q[2];
+// assign qdisplay[3] = q[3];
 
-assign qdisplay[4] = q[4];
-assign qdisplay[5] = q[5];
-assign qdisplay[6] = q[6];
-assign qdisplay[7] = 1'b0;
+// assign qdisplay[4] = q[4];
+// assign qdisplay[5] = q[5];
+// assign qdisplay[6] = q[6];
+// assign qdisplay[7] = 1'b0;
 
-assign qdisplay[8] =  q[7];
-assign qdisplay[9] =  q[8];
-assign qdisplay[10] = q[9];
-assign qdisplay[11] = q[10];
+// assign qdisplay[8] =  q[7];
+// assign qdisplay[9] =  q[8];
+// assign qdisplay[10] = q[9];
+// assign qdisplay[11] = q[10];
 
-assign qdisplay[12] = q[11];
-assign qdisplay[13] = q[12];
-assign qdisplay[14] = q[13];
-assign qdisplay[15] = 1'b0;
+// assign qdisplay[12] = q[11];
+// assign qdisplay[13] = q[12];
+// assign qdisplay[14] = q[13];
+// assign qdisplay[15] = 1'b0;
 
 
 
