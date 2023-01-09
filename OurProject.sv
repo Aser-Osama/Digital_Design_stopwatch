@@ -303,15 +303,15 @@ and a3(hz1,n_two, half);
 endmodule
 
 
-module count_mode(en, cm, p_cm, y);
-input en, cm, p_cm;
-output y;
-wire n_en, w1, w2;
-not n1(n_en, en);
-and a1(w1, n_en, p_cm);
-and a2(w2, en, cm);
-or o1(y, w1,w2);
-endmodule
+//module count_mode(en, cm, p_cm, y);
+//input en, cm, p_cm;
+//output y;
+//wire n_en, w1, w2;
+//not n1(n_en, en);
+//and a1(w1, n_en, p_cm);
+//and a2(w2, en, cm);
+//or o1(y, w1,w2);
+//endmodule
 
 
 
