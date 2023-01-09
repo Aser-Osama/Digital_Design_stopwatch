@@ -19,7 +19,7 @@ assign pwr = 1'b1;
 
 wire out_clk, out_dir, out_add2, out_en,fclk;
 control_unit cu(u_en, u_dir, u_times2, u_div2, u_add2, u_clk, out_clk, out_dir, out_add2, out_en, flshmode);
-counter cntr(out_en, u_rst, out_clk, out_dir, u_add2, qtemp);
+	counter cntr(out_en, u_rst, out_clk, out_dir, out_add2, qtemp);
 
 muxtot mt(qtemp, flshmode, out_clk, qt,fclk);
 assign clkdisp = out_clk;
