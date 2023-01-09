@@ -1,20 +1,38 @@
-module OurProject(u_en, nu_rst, u_dir, nu_add2, u_times2, u_div2, u_clk, clkdisp ,q);
+module OurProject(u_en, nu_rst, u_dir, nu_add2, u_times2, u_div2, u_clk, clkdisp ,q, digit, pwr);
 input u_en, nu_rst, u_dir, u_times2, u_div2, u_clk, nu_add2;
 wire u_rst, u_add2;
-
 not n1(u_rst, nu_rst);
 not n2(u_add2, nu_add2);
 
 wire [13:0]qtemp;
 wire flshmode;
-output [15:0]q;
+wire [15:0]qt;
+output [6:0]q;
 output clkdisp;
-wire out_clk, out_dir, out_add2, out_en;
-control_unit cu(u_en, u_dir, u_times2, u_div2, u_add2, u_clk, out_clk, out_dir, out_add2, out_en, flshmode);
-counter cntr(out_en, u_rst, u_clk, out_dir, u_add2, qtemp);
+output [3:0]digit;
+wire [6:0]qn;
 
-muxtot mt(qtemp, flshmode, out_clk, q);
+
+//temp
+output pwr;
+assign pwr = 1'b1;
+
+wire out_clk, out_dir, out_add2, out_en,fclk;
+control_unit cu(u_en, u_dir, u_times2, u_div2, u_add2, u_clk, out_clk, out_dir, out_add2, out_en, flshmode);
+counter cntr(out_en, u_rst, out_clk, out_dir, u_add2, qtemp);
+
+muxtot mt(qtemp, flshmode, out_clk, qt,fclk);
 assign clkdisp = out_clk;
+bcd_4in1 my7seg(qt, u_clk,qn, digit, fclk, flshmode);
+not not1(q[0], qn[0]);
+not not2(q[1], qn[1]);
+not not3(q[2], qn[2]);
+not not4(q[3], qn[3]);
+not not5(q[4], qn[4]);
+not not6(q[5], qn[5]);
+not not7(q[6], qn[6]);
+
+
 
 endmodule
 
@@ -25,10 +43,10 @@ endmodule
 module mux21(a0, a1, s, y);
 
 	input s, a0, a1;
+	not not1(n_s, s);
 	output y;
 	wire w1, w2, n_s;
 	
-	not not1(n_s, s);
 	and and1(w1, s, a1);
 	and and2(w2, n_s, a0);
 	or or1(y, w1, w2);
@@ -50,29 +68,30 @@ endmodule
 
 
 ////output mux/////
-module muxtot(qin1, s,clk ,qout);
+module muxtot(qin1, s,clk ,qout, fmclk);
 input [13:0]qin1;
 input s,clk;
+output fmclk;
 reg [15:0]q_of5;
 reg [15:0]q_flash;
 assign q_of5 = {16'b0101010101010101};
 output [15:0]qout;
-and and0(q_flash[0], q_of5[0], clk);
-and and1(q_flash[1], q_of5[1], clk);
-and and2(q_flash[2], q_of5[2], clk);
-and and3(q_flash[3], q_of5[3], clk);
-and and4(q_flash[4], q_of5[4], clk);
-and and5(q_flash[5], q_of5[5], clk);
-and and6(q_flash[6], q_of5[6], clk);
-and and7(q_flash[7], q_of5[7], clk);
-and and8(q_flash[8], q_of5[8], clk);
-and and9(q_flash[9], q_of5[9], clk);
-and and10(q_flash[10], q_of5[10], clk);
-and and11(q_flash[11], q_of5[11], clk);
-and and12(q_flash[12], q_of5[12], clk);
-and and13(q_flash[13], q_of5[13], clk);
-and and14(q_flash[14], q_of5[14], clk);
-and and15(q_flash[15], q_of5[15], clk);
+mux21 and0(1'b0, q_of5[0], clk,q_flash[0]);
+mux21 and1(1'b0, q_of5[1], clk,q_flash[1]);
+mux21 and2(1'b0, q_of5[2], clk,q_flash[2]);
+mux21 and3(1'b1, q_of5[3], clk,q_flash[3]);
+mux21 and4(1'b0, q_of5[4], clk,q_flash[4]);
+mux21 and5(1'b0, q_of5[5], clk,q_flash[5]);
+mux21 and6(1'b0, q_of5[6], clk,q_flash[6]);
+mux21 and7(1'b1, q_of5[7], clk,q_flash[7]);
+mux21 and8(1'b0, q_of5[8], clk,q_flash[8]);
+mux21 and9(1'b0, q_of5[9], clk,q_flash[9]);
+mux21 and10(1'b0,  q_of5[10], clk,q_flash[10]);
+mux21 and11(1'b1,  q_of5[11], clk,q_flash[11]);
+mux21 and12(1'b0,  q_of5[12], clk,q_flash[12]);
+mux21 and13(1'b0,  q_of5[13], clk,q_flash[13]);
+mux21 and14(1'b0,  q_of5[14], clk,q_flash[14]);
+mux21 and15(1'b1,  q_of5[15], clk,q_flash[15]);
 
 mux21  m0(qin1[0],  q_flash[0], s, qout[0]);
 mux21  m1(qin1[1],  q_flash[1], s, qout[1]);
@@ -93,6 +112,7 @@ mux21 m12( qin1[11],q_flash[12],s, qout[12]);
 mux21 m13( qin1[12],q_flash[13],s, qout[13]);
 mux21 m14( qin1[13],q_flash[14],s, qout[14]);
 mux21 m15( 1'b0,    q_flash[15],s, qout[15]);
+assign fmclk = clk;
 endmodule
 ///////////////////
 
@@ -113,6 +133,20 @@ and selB(B,  Sel, In);
 
 endmodule
 ////////////////////////////////////////////////////////////////////
+
+module demux41(In, Sel0, Sel1, A, B, C, D);
+input In, Sel0,Sel1; output A,B,C,D;
+
+wire  nSel0, nSel1;
+
+not notSel0(nSel0, Sel0);
+not notSel1(nSel1, Sel1);
+and selA(A, nSel0, nSel1, In);
+and selB(B, Sel0, nSel1, In);
+and selC(C, nSel0, Sel1, In);
+and selD(D, Sel0, Sel1, In);
+
+endmodule
 
 //////////enot/////////////////
 module enot(en, a, y);
@@ -463,7 +497,7 @@ and and6(b_c,n_in[1], in[2]);
 and and7(bc_,in[1],n_in[2]);
 and and8(bd_,in[1],n_in[3]);
 and and9(bc_d,in[1],in[3],n_in[2]);
-or ora(out[6],in[0],in[2], b_d_);
+or ora(out[6],in[0],in[2], b_d_, bd);
 or orb(out[5],n_in[1],cd, c_d_);
 or orc(out[4],in[1],in[3],n_in[2]);
 or ord(out[3],b_d_,cd_,b_c,in[0],bc_d);
@@ -676,13 +710,13 @@ mux21 mux21L1_1(w_xor_l1[1],   grnd,    m0_and, w_mux_l1[1]);
 mux21 mux21L1_2(w_xor_l1[2],   grnd,    m0_and, w_mux_l1[2]);
 mux21 mux21L1_3(w_xor_l1[3],   dirgrnd, m0_and, w_mux_l1[3]);
 
-mux21 mux21L1_4(w_xor_l1[4],   grnd,    m1_and, w_mux_l1[4]);
-mux21 mux21L1_5(w_xor_l1[5],   dirgrnd, m1_and, w_mux_l1[5]);
+mux21 mux21L1_4(w_xor_l1[4],   dirgrnd,    m1_and, w_mux_l1[4]);
+mux21 mux21L1_5(w_xor_l1[5],   grnd, m1_and, w_mux_l1[5]);
 mux21 mux21L1_6(w_xor_l1[6],   dirgrnd, m1_and, w_mux_l1[6]);
 
 mux21 mux21L1_7(w_xor_l1[7],   dirgrnd, m2_and, w_mux_l1[7]);
-mux21 mux21L1_8(w_xor_l1[8],   grnd,    m2_and, w_mux_l1[8]);
-mux21 mux21L1_9(w_xor_l1[9],   grnd,    m2_and, w_mux_l1[9]);
+mux21 mux21L1_8(w_xor_l1[8],   dirgrnd,    m2_and, w_mux_l1[8]);
+mux21 mux21L1_9(w_xor_l1[9],   dirgrnd,    m2_and, w_mux_l1[9]);
 mux21 mux21L1_10(w_xor_l1[10], dirgrnd, m2_and, w_mux_l1[10]);
 
 mux21 mux21L1_11(w_xor_l1[11], grnd,    m3_and, w_mux_l1[11]);
@@ -786,7 +820,73 @@ min_of mnof(w_down_ofdet_en, q[13:11], q[10:7], q[6:4], q[3:0], minofr);
 // assign qdisplay[15] = 1'b0;
 
 
-
 endmodule
 
  
+module miniclkdiv(clk_in, c_out);
+reg [20:0] counter;
+input clk_in; output reg c_out;
+
+initial begin 
+ c_out = 0;
+end
+
+always @ (posedge clk_in)
+begin
+counter = counter + 1'b1;
+ 
+if (counter == 62500)
+  begin
+    c_out = ~c_out;
+    counter = 0;
+  end
+end
+endmodule
+
+module bcd_4in1(qin, clk_in,qout, digit, fmclk, fmm);
+input [15:0]qin; output [6:0]qout; output [3:0]digit; input clk_in;
+wire [6:0]decoded1; wire [6:0]decoded2; wire [6:0]decoded3; wire [6:0]decoded4; 
+wire[1:0]seldigit; wire clk_out; reg [1:0]qbar; wire nclk;
+input fmclk, fmm;
+miniclkdiv mcdv(clk_in, clk_out);
+not nc(nclk, clk_out);
+wire [6:0]tqout;
+wire fm;
+initial begin
+qbar[1] = 1'b1;
+qbar[0] = 1'b1;
+end
+
+
+bcd_decoder d1M(qin[15:12], decoded1[6:0]);
+bcd_decoder d2M(qin[11:8],  decoded2[6:0]);
+bcd_decoder d1S(qin[7:4],   decoded3[6:0]);
+bcd_decoder d2S(qin[3:0],   decoded4[6:0]);
+
+dflipflop dff1(qbar[0], 1'b0, 1'b0, 1'b1, nclk,      seldigit[0], qbar[0]);
+dflipflop dff2(qbar[1], 1'b0, 1'b0, 1'b1,   qbar[0], seldigit[1], qbar[1]);
+
+
+mux41 ma(decoded1[0], decoded2[0], decoded3[0], decoded4[0], seldigit[1], seldigit[0], tqout[0]);
+mux41 mb(decoded1[1], decoded2[1], decoded3[1], decoded4[1], seldigit[1], seldigit[0], tqout[1]);
+mux41 mc(decoded1[2], decoded2[2], decoded3[2], decoded4[2], seldigit[1], seldigit[0], tqout[2]);
+mux41 md(decoded1[3], decoded2[3], decoded3[3], decoded4[3], seldigit[1], seldigit[0], tqout[3]);
+mux41 me(decoded1[4], decoded2[4], decoded3[4], decoded4[4], seldigit[1], seldigit[0], tqout[4]);
+mux41 mf(decoded1[5], decoded2[5], decoded3[5], decoded4[5], seldigit[1], seldigit[0], tqout[5]);
+mux41 mg(decoded1[6], decoded2[6], decoded3[6], decoded4[6], seldigit[1], seldigit[0], tqout[6]);
+demux41 dmd(1'b1, seldigit[1], seldigit[0], digit[3], digit[2], digit[1], digit[0]);
+
+wire nfmclk;
+not nfclk(nfmclk, fmclk);
+and(fm,nfmclk,fmm);
+
+mux21 m0(tqout[0],1'b0,fm,qout[0]);
+mux21 m1(tqout[1],1'b0,fm,qout[1]);
+mux21 m2(tqout[2],1'b0,fm,qout[2]);
+mux21 m3(tqout[3],1'b0,fm,qout[3]);
+mux21 m4(tqout[4],1'b0,fm,qout[4]);
+mux21 m5(tqout[5],1'b0,fm,qout[5]);
+mux21 m6(tqout[6],1'b0,fm,qout[6]);
+
+
+endmodule
